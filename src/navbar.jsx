@@ -3,11 +3,7 @@ import { Link, NavLink } from 'react-router'
 
 const links = [
   { name: 'Login', path: '/login' },
-  { name: 'Signup', path: '/signup' },
-  { name: 'Feed', path: '/feed' },
   { name: 'Profile', path: '/profile' },
-  { name: 'Connections', path: '/connections' },
-  { name: 'Requests', path: '/requests' },
 ]
 
 function Navbar() {
