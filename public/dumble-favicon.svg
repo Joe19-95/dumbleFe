@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <defs>
+    <linearGradient id="dumble-gradient" x1="6" y1="4" x2="34" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8b5cf6" />
+      <stop offset="1" stop-color="#06b6d4" />
+    </linearGradient>
+  </defs>
+  <rect width="40" height="40" rx="12" fill="url(#dumble-gradient)" />
+  <path d="M12 10.5h7.7c7.2 0 11.8 3.7 11.8 9.5s-4.6 9.5-11.8 9.5H12v-19Zm7.4 13.9c3.7 0 5.8-1.6 5.8-4.4s-2.1-4.4-5.8-4.4h-1.2v8.8h1.2Z" fill="#fff" />
+</svg>
