@@ -1,16 +1,17 @@
 import { createBrowserRouter } from 'react-router'
 import App from './App.jsx'
-import Login from './Login.jsx'
-import SimplePage from './SimplePage.jsx'
+import Feed from './pages/Feed.jsx'
+import Login from './pages/Login.jsx'
+import Profile from './pages/Profile.jsx'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [
-      { index: true, element: <SimplePage title="Home" /> },
+      { index: true, element: <Feed /> },
       { path: 'login', element: <Login /> },
-      { path: 'profile', element: <SimplePage title="Profile" /> },
+      { path: 'profile', element: <Profile /> },
     ],
   },
 ])

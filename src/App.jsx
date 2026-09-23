@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router'
-import Footer from './Footer.jsx'
-import Navbar from './navbar.jsx'
+import Footer from './components/Footer.jsx'
+import Navbar from './components/Navbar.jsx'
 
 function App() {
   return (
