@@ -42,7 +42,7 @@ function EditProfile({ user }) {
       fname: form.fname.trim(),
       lname: form.lname.trim(),
       age: form.age === '' ? undefined : Number(form.age),
-      gender: form.gender,
+      gender: form.gender || undefined,
       photoURL: form.photoURL.trim(),
       skills: form.skills
         .split(',')
@@ -124,9 +124,9 @@ function EditProfile({ user }) {
               onChange={handleChange}
             >
               <option value="">Prefer not to say</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other</option>
             </select>
           </label>
         </div>

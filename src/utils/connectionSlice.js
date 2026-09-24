@@ -2,12 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const connectSlice = createSlice({
     name: 'connect',
-    initialState: [],
+    initialState: null,
     reducers: {
-        addConnection: (state, actions) => {
-            return actions.payload
-        },
-        removeConnection: (state, action) => null
+        addConnection: (_, action) => action.payload,
+        removeConnection: () => null,
     }
 })
 

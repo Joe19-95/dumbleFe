@@ -3,7 +3,9 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, NavLink, useNavigate } from 'react-router'
 import { BASE_URL } from '../utils/constants.js'
+import { removeConnection } from '../utils/connectionSlice.js'
 import { removeFeed } from '../utils/feedSlice.js'
+import { clearRequests } from '../utils/requestSlice.js'
 import { removeUser } from '../utils/userSlice.js'
 
 function Navbar() {
@@ -18,6 +20,8 @@ function Navbar() {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true })
       dispatch(removeUser())
       dispatch(removeFeed())
+      dispatch(removeConnection())
+      dispatch(clearRequests())
       navigate('/login', { replace: true })
     } catch (error) {
       console.error('Logout failed:', error)

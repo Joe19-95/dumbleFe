@@ -4,6 +4,7 @@ function UserCard({ user, showActions = true }) {
   const [imageFailed, setImageFailed] = useState(false)
   const fullName = `${user.fname ?? ''} ${user.lname ?? ''}`.trim()
   const initials = `${user.fname?.[0] ?? ''}${user.lname?.[0] ?? ''}`.toUpperCase()
+  const genderLabel = { M: 'Male', F: 'Female', O: 'Other' }[user.gender] ?? user.gender
 
   return (
     <article className="card overflow-hidden border border-base-300 bg-base-100 shadow-xl">
@@ -26,7 +27,7 @@ function UserCard({ user, showActions = true }) {
         <h2 className="card-title">{fullName || 'Unnamed user'}</h2>
 
         <p className="text-sm text-base-content/70">
-          {[user.age, user.gender].filter(Boolean).join(' • ') || 'Details not provided'}
+          {[user.age, genderLabel].filter(Boolean).join(' • ') || 'Details not provided'}
         </p>
 
         {user.skills?.length > 0 && (

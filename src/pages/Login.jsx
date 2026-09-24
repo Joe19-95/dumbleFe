@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { BASE_URL } from '../utils/constants.js'
 import { addUser } from '../utils/userSlice.js'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 function Login() {
   const dispatch = useDispatch()
@@ -52,6 +52,13 @@ function Login() {
           Login
         </button>
       </form>
+
+      <p className="mt-6 text-center text-sm text-base-content/70">
+        Not registered yet?{' '}
+        <Link className="font-semibold text-primary hover:underline" to="/signup">
+          Create an account
+        </Link>
+      </p>
     </main>
   )
 }
