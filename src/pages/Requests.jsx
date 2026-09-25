@@ -2,7 +2,7 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ConnectionCard from '../components/ConnectionCard.jsx'
-import { removeConnection } from '../utils/connectionSlice.js'
+import { removeAll } from '../utils/connectionSlice.js'
 import { BASE_URL } from '../utils/constants.js'
 import { addRequests, removeRequest } from '../utils/requestSlice.js'
 
@@ -47,7 +47,7 @@ function Requests() {
         { withCredentials: true },
       )
       dispatch(removeRequest(requestId))
-      if (status === 'accepted') dispatch(removeConnection(requestId))
+      if (status === 'accepted') dispatch(removeAll())
     } catch (err) {
       console.error('Unable to review request:', err)
       const responseError = err.response?.data

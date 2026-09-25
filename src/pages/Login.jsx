@@ -2,6 +2,9 @@ import axios from 'axios'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { BASE_URL } from '../utils/constants.js'
+import { removeAll } from '../utils/connectionSlice.js'
+import { removeFeed } from '../utils/feedSlice.js'
+import { clearRequests } from '../utils/requestSlice.js'
 import { addUser } from '../utils/userSlice.js'
 import { Link, useNavigate } from 'react-router'
 
@@ -20,6 +23,9 @@ function Login() {
         { withCredentials: true },
       )
       console.log(res)
+      dispatch(removeFeed())
+      dispatch(removeAll())
+      dispatch(clearRequests())
       dispatch(addUser(res.data.data))
       navigate('/')
     } catch (err) {
