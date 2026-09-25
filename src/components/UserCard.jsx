@@ -1,10 +1,25 @@
+import axios from 'axios'
 import { useState } from 'react'
+import { BASE_URL } from '../utils/constants'
+import { useDispatch } from 'react-redux'
+import { removeConnection } from '../utils/feedSlice'
 
 function UserCard({ user, showActions = true }) {
   const [imageFailed, setImageFailed] = useState(false)
   const fullName = `${user.fname ?? ''} ${user.lname ?? ''}`.trim()
   const initials = `${user.fname?.[0] ?? ''}${user.lname?.[0] ?? ''}`.toUpperCase()
   const genderLabel = { M: 'Male', F: 'Female', O: 'Other' }[user.gender] ?? user.gender
+
+  const dispatch = useDispatch()
+  const handleRequest = async (status, id) => {
+    try {
+      const response = await axios.post(BASE_URL + `/sendRequest/${status}/${id}`, {}, { withCredentials: true })
+      dispatch(removeConnection(id))
+    } catch (err) {
+
+    }
+
+  }
 
   return (
     <article className="card overflow-hidden border border-base-300 bg-base-100 shadow-xl">
@@ -42,10 +57,10 @@ function UserCard({ user, showActions = true }) {
 
         {showActions && (
           <div className="card-actions mt-4 justify-end">
-            <button type="button" className="btn btn-outline btn-error">
+            <button type="button" onClick={() => { handleRequest('ignored', user._id) }} className="btn btn-outline btn-error">
               Ignore
             </button>
-            <button type="button" className="btn btn-primary">
+            <button type="button" onClick={() => { handleRequest('interested', user._id) }} className="btn btn-primary">
               Interested
             </button>
           </div>

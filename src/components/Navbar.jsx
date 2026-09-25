@@ -3,10 +3,36 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, NavLink, useNavigate } from 'react-router'
 import { BASE_URL } from '../utils/constants.js'
-import { removeConnection } from '../utils/connectionSlice.js'
+import { removeAll } from '../utils/connectionSlice.js'
 import { removeFeed } from '../utils/feedSlice.js'
 import { clearRequests } from '../utils/requestSlice.js'
 import { removeUser } from '../utils/userSlice.js'
+
+function NavbarAvatar({ user }) {
+  const [imageFailed, setImageFailed] = useState(false)
+  const fullName = `${user.fname ?? ''} ${user.lname ?? ''}`.trim()
+  const initials = `${user.fname?.[0] ?? ''}${user.lname?.[0] ?? ''}`.toUpperCase()
+
+  if (!user.photoURL || imageFailed) {
+    return (
+      <span
+        className="grid h-9 w-9 place-items-center rounded-full border border-primary/20 bg-primary/10 text-sm font-bold text-primary"
+        aria-label={fullName || 'User profile'}
+      >
+        {initials || '?'}
+      </span>
+    )
+  }
+
+  return (
+    <img
+      src={user.photoURL}
+      alt={fullName || 'User profile'}
+      className="h-9 w-9 rounded-full border border-base-300 object-cover"
+      onError={() => setImageFailed(true)}
+    />
+  )
+}
 
 function Navbar() {
   const dispatch = useDispatch()
@@ -20,8 +46,9 @@ function Navbar() {
       await axios.post(`${BASE_URL}/logout`, {}, { withCredentials: true })
       dispatch(removeUser())
       dispatch(removeFeed())
-      dispatch(removeConnection())
+      dispatch(removeAll())
       dispatch(clearRequests())
+
       navigate('/login', { replace: true })
     } catch (error) {
       console.error('Logout failed:', error)
@@ -69,11 +96,7 @@ function Navbar() {
                 <span className="text-sm">
                   Welcome, <strong>{user.fname} {user.lname}</strong>
                 </span>
-                <img
-                  src={user.photoURL}
-                  alt={`${user.fname} ${user.lname}`}
-                  className="h-9 w-9 rounded-full border border-base-300 object-cover"
-                />
+                <NavbarAvatar key={user.photoURL} user={user} />
               </summary>
 
               <ul className="menu dropdown-content z-10 mt-2 w-44 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">

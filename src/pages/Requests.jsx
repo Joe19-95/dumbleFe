@@ -47,7 +47,7 @@ function Requests() {
         { withCredentials: true },
       )
       dispatch(removeRequest(requestId))
-      if (status === 'accepted') dispatch(removeConnection())
+      if (status === 'accepted') dispatch(removeConnection(requestId))
     } catch (err) {
       console.error('Unable to review request:', err)
       const responseError = err.response?.data
