@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router'
 import App from './App.jsx'
+import Premium from './components/Premium.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Connections from './pages/Connections.jsx'
 import Feed from './pages/Feed.jsx'
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
           { path: 'connections', element: <Connections /> },
           { path: 'requests', element: <Requests /> },
           { path: 'profile', element: <Profile /> },
+          { path: 'premium', element: <Premium /> },
           { path: 'preferences', element: <Preferences /> },
         ],
       },

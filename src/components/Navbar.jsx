@@ -104,6 +104,9 @@ function Navbar() {
                   <Link to="/profile">Profile</Link>
                 </li>
                 <li>
+                  <Link to="/premium">Premium</Link>
+                </li>
+                <li>
                   <Link to="/preferences">Preferences</Link>
                 </li>
                 <li>
