@@ -9,6 +9,7 @@ function Premium() {
     const res = await axios.get(BASE_URL + '/payment/verify', { withCredentials: true });
     return Boolean(res.data.isPremium);
   }
+  
 
   useEffect(() => {
     let isActive = true;

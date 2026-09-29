@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router'
 import ConnectionCard from '../components/ConnectionCard.jsx'
 import { addConnection } from '../utils/connectionSlice.js'
 import { BASE_URL } from '../utils/constants.js'
@@ -51,7 +52,11 @@ function Connections() {
       ) : (
         <div className="space-y-5">
           {connections.map((user) => (
-            <ConnectionCard key={user._id} user={user} />
+            <ConnectionCard key={user._id} user={user}>
+              <Link className="btn btn-primary" to={`/chat/${user._id}`}>
+                Chat
+              </Link>
+            </ConnectionCard>
           ))}
         </div>
       )}
