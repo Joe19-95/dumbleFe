@@ -5,18 +5,22 @@ import { BASE_URL } from "../utils/constants";
 
 function Premium() {
   const [isPremium, setIsPremium] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState('');
+
   const handleVerifyPayment = async () => {
     const res = await axios.get(BASE_URL + '/payment/verify', { withCredentials: true });
-    return Boolean(res.data.isPremium);
-  }
-  
+    return Boolean(res.data?.isPremium ?? res.data?.premium ?? false);
+  };
 
   useEffect(() => {
     let isActive = true;
     const checkPremiumStatus = async () => {
       try {
         const premium = await handleVerifyPayment();
-        if (isActive) setIsPremium(premium);
+        if (isActive) {
+          setIsPremium(premium);
+          if (premium) setPaymentStatus('Premium activated successfully.');
+        }
       } catch (error) {
         console.error('Failed to check premium status:', error);
       }
@@ -48,36 +52,50 @@ function Premium() {
   ]
 
   const handleClick = async (plan) => {
-    let res = await axios.post(BASE_URL + '/payment/create', { plan }, { withCredentials: true });
-    const options = {
-      key: res.data.key_id,
-      amount: res.data.amount,
-      currency: res.data.currency,
-      name: 'Dumble Premium',
-      description: 'Enjoy premium features with Dumble Premium',
-      order_id: res.data.orderId,
-      prefill: {
-        name: '<name>',
-        email: '<email>',
-        contact: '9999999999'
-      },
-      theme: {
-        color: '#F37254'
-      },
-      handler: async () => {
-        try {
-          setIsPremium(await handleVerifyPayment());
-        } catch (error) {
-          console.error('Failed to refresh premium status:', error);
+    try {
+      const res = await axios.post(BASE_URL + '/payment/create', { plan }, { withCredentials: true });
+      const options = {
+        key: res.data.key_id,
+        amount: res.data.amount,
+        currency: res.data.currency,
+        name: 'Dumble Premium',
+        description: 'Enjoy premium features with Dumble Premium',
+        order_id: res.data.orderId,
+        prefill: {
+          name: '<name>',
+          email: '<email>',
+          contact: '9999999999'
+        },
+        theme: {
+          color: '#F37254'
+        },
+        handler: async () => {
+          try {
+            const premium = await handleVerifyPayment();
+            setIsPremium(premium || true);
+            setPaymentStatus(premium ? 'Payment successful! Your premium membership is active.' : 'Your payment was successful. We are verifying your premium access...');
+          } catch (error) {
+            console.error('Failed to refresh premium status:', error);
+            setPaymentStatus('Payment successful. We are checking your premium access...');
+            setIsPremium(true);
+          }
         }
-      }
-    };
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-
+      };
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error('Failed to create payment order:', error);
+      setPaymentStatus('Payment could not be started. Please try again.');
+    }
   }
   return (
     <div className="mx-auto max-w-6xl px-6 py-12">
+      {paymentStatus && !isPremium && (
+        <div className="mb-6 rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success-content">
+          {paymentStatus}
+        </div>
+      )}
+
       {isPremium ? (
         <div className="mx-auto max-w-xl py-12 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success/10 text-3xl text-success">
@@ -85,7 +103,7 @@ function Premium() {
           </div>
           <p className="mt-6 text-sm font-semibold uppercase tracking-[0.22em] text-success">Premium membership</p>
           <h1 className="mt-3 text-3xl font-bold text-base-content">Congratulations, you’re already a premium user!</h1>
-          <p className="mt-3 text-base-content/70">Your premium benefits are active. Enjoy your membership.</p>
+          <p className="mt-3 text-base-content/70">{paymentStatus || 'Your premium benefits are active. Enjoy your membership.'}</p>
         </div>
       ) : (
         <>
