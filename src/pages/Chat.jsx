@@ -9,13 +9,17 @@ function Chat() {
   const [messages, setMessages] = useState([])
   const [message, setMessage] = useState('')
   const user = useSelector((store) => store.user)
-  const userId = user?.user_id
+  const userId = user?._id
   const fname = user?.fname
   const socketRef = useRef(null)
 
   const getChat = useCallback(async () => {
     if (!target) return
-
+    console.log('Chat user fields', {
+      userId: user?.user_id,
+      mongoId: user?._id,
+      target,
+    })
     try {
       const chat = await axios.get('/chat/' + target, { withCredentials: true })
       const chatMessages = Array.isArray(chat?.data?.messages) ? chat.data.messages : []
