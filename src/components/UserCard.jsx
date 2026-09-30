@@ -13,12 +13,11 @@ function UserCard({ user, showActions = true }) {
   const dispatch = useDispatch()
   const handleRequest = async (status, id) => {
     try {
-      const response = await axios.post(BASE_URL + `/sendRequest/${status}/${id}`, {}, { withCredentials: true })
+      await axios.post(BASE_URL + `/sendRequest/${status}/${id}`, {}, { withCredentials: true })
       dispatch(removeConnection(id))
     } catch (err) {
-
+      console.error('Request failed:', err)
     }
-
   }
 
   return (
