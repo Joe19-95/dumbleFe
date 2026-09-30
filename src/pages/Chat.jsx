@@ -64,7 +64,7 @@ function Chat() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col px-6 py-10">
-      <h1 className="mb-6 text-2xl font-bold">Chat with {target}</h1>
+      <h1 className="mb-6 text-2xl font-bold">Your Chat with {target}</h1>
 
       <div className="flex min-h-80 flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-5">
         {messages.map((item) => {
