@@ -29,7 +29,7 @@ function Chat() {
       }))
 
       setMessages(final)
-    } catch (error) {
+    } catch {
       setMessages([])
     }
   }, [target, userId])
