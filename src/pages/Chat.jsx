@@ -15,11 +15,7 @@ function Chat() {
 
   const getChat = useCallback(async () => {
     if (!target) return
-    console.log('Chat user fields', {
-      userId: user?.user_id,
-      mongoId: user?._id,
-      target,
-    })
+
     try {
       const chat = await axios.get('/chat/' + target, { withCredentials: true })
       const chatMessages = Array.isArray(chat?.data?.messages) ? chat.data.messages : []
@@ -34,7 +30,6 @@ function Chat() {
 
       setMessages(final)
     } catch (error) {
-      console.error('Failed to load chat messages:', error)
       setMessages([])
     }
   }, [target, userId])
@@ -48,23 +43,14 @@ function Chat() {
     if (userId && target) {
       const socket = createSocketConnection()
       socketRef.current = socket
-      console.log('Chat socket connect', { userId, target, fname, socketId: socket?.id })
       socket.emit('joinChat', { from: userId, to: target, name: fname })
-      socket.on('connect', () => {
-        console.log('Chat socket connected', { socketId: socket.id })
-      })
-      socket.on('connect_error', (error) => {
-        console.error('Chat socket connect_error', error)
-      })
       socket.on('newMessage', ({ fname: senderName, from, text }) => {
-        console.log('Chat socket newMessage received', { senderName, from, text })
         setMessages((currentMessages) => [
           ...currentMessages,
           { id: Date.now(), text, fname: senderName, sentByUser: from === userId },
         ])
       })
       return () => {
-        console.log('Chat socket disconnecting', { userId, target })
         socket.disconnect()
         socketRef.current = null
       }
@@ -75,20 +61,12 @@ function Chat() {
   function sendMessage(event) {
     event.preventDefault()
     const text = message.trim()
-    console.log('Send button clicked', { text, userId, target, fname, socketExists: !!socketRef.current })
 
-    if (!text) {
-      console.log('Send blocked: empty message text')
-      return
-    }
+    if (!text) return
 
     const socket = socketRef.current
-    if (!socket) {
-      console.log('Send blocked: socket not ready')
-      return
-    }
+    if (!socket) return
 
-    console.log('Emitting sendMessage', { fname, from: userId, to: target, text })
     socket.emit('sendMessage', { fname, from: userId, to: target, text })
     setMessage('')
   }
