@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { createSocketConnection } from '../utils/socket'
 import { useSelector } from 'react-redux'
@@ -9,34 +9,37 @@ function Chat() {
   const [message, setMessage] = useState('')
   const user = useSelector(store => store.user)
   const userId = user?.user_id
+  const fname = user?.fname
+  const socketRef = useRef(null)
+
   useEffect(() => {
     if (userId && target) {
       const socket = createSocketConnection()
-      socket.emit('joinChat', { from: userId, to: target, name: user.fname })
+      socketRef.current = socket
+      socket.emit('joinChat', { from: userId, to: target, name: fname })
       socket.on('newMessage', ({ fname, from, text }) => {
-        console.log(fname, text)
-        setMessages((messages) => [...messages, { id: Date.now(), text, fname, sentByUser: from === userId }])
+        setMessages((messages) => [
+          ...messages,
+          { id: Date.now(), text, fname, sentByUser: from === userId },
+        ])
       })
       return () => {
         socket.disconnect()
+        socketRef.current = null
       }
     }
-  }, [userId, target])
-
-
+  }, [userId, target, fname])
 
   function sendMessage(event) {
     event.preventDefault()
     const text = message.trim()
     if (!text) return
 
-    // setMessages((currentMessages) => [
-    //   ...currentMessages,
-    //   { id: Date.now(), text, sentByUser: true },
-    // ])
+    const socket = socketRef.current
+    if (!socket) return
+
+    socket.emit('sendMessage', { fname, from: userId, to: target, text })
     setMessage('')
-    const socket = createSocketConnection()
-    socket.on('sendMessage', { fname: user.fname, from, to, text: message })
   }
 
   return (
