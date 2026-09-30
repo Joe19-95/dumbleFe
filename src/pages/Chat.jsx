@@ -16,18 +16,27 @@ function Chat() {
   const getChat = useCallback(async () => {
     if (!target) return
 
-    const chat = await axios.get('/chat/' + target, { withCredentials: true })
-    const final = chat.data.messages.map((item) => ({
-      id: item?._id ?? `${item?.from?._id ?? 'unknown'}-${item?.text ?? 'message'}-${Date.now()}`,
-      fname: item?.from?.fname ?? 'Unknown',
-      lname: item?.from?.lname ?? '',
-      text: item?.text ?? '',
-      sentByUser: item?.from?._id === userId,
-    }))
-    setMessages(final)
+    try {
+      const chat = await axios.get('/chat/' + target, { withCredentials: true })
+      const chatMessages = Array.isArray(chat?.data?.messages) ? chat.data.messages : []
+
+      const final = chatMessages.map((item) => ({
+        id: item?._id ?? `${item?.from?._id ?? 'unknown'}-${item?.text ?? 'message'}-${Date.now()}`,
+        fname: item?.from?.fname ?? 'Unknown',
+        lname: item?.from?.lname ?? '',
+        text: item?.text ?? '',
+        sentByUser: item?.from?._id === userId,
+      }))
+
+      setMessages(final)
+    } catch (error) {
+      console.error('Failed to load chat messages:', error)
+      setMessages([])
+    }
   }, [target, userId])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     getChat()
   }, [getChat])
 
@@ -35,14 +44,23 @@ function Chat() {
     if (userId && target) {
       const socket = createSocketConnection()
       socketRef.current = socket
+      console.log('Chat socket connect', { userId, target, fname, socketId: socket?.id })
       socket.emit('joinChat', { from: userId, to: target, name: fname })
+      socket.on('connect', () => {
+        console.log('Chat socket connected', { socketId: socket.id })
+      })
+      socket.on('connect_error', (error) => {
+        console.error('Chat socket connect_error', error)
+      })
       socket.on('newMessage', ({ fname: senderName, from, text }) => {
+        console.log('Chat socket newMessage received', { senderName, from, text })
         setMessages((currentMessages) => [
           ...currentMessages,
           { id: Date.now(), text, fname: senderName, sentByUser: from === userId },
         ])
       })
       return () => {
+        console.log('Chat socket disconnecting', { userId, target })
         socket.disconnect()
         socketRef.current = null
       }
@@ -53,11 +71,20 @@ function Chat() {
   function sendMessage(event) {
     event.preventDefault()
     const text = message.trim()
-    if (!text) return
+    console.log('Send button clicked', { text, userId, target, fname, socketExists: !!socketRef.current })
+
+    if (!text) {
+      console.log('Send blocked: empty message text')
+      return
+    }
 
     const socket = socketRef.current
-    if (!socket) return
+    if (!socket) {
+      console.log('Send blocked: socket not ready')
+      return
+    }
 
+    console.log('Emitting sendMessage', { fname, from: userId, to: target, text })
     socket.emit('sendMessage', { fname, from: userId, to: target, text })
     setMessage('')
   }
@@ -67,7 +94,7 @@ function Chat() {
       <h1 className="mb-6 text-2xl font-bold">Your Chat with {target}</h1>
 
       <div className="flex min-h-80 flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-5">
-        {messages.map((item) => {
+        {(Array.isArray(messages) ? messages : []).map((item) => {
           const senderName = item.sentByUser ? 'You' : [item.fname, item.lname].filter(Boolean).join(' ') || 'Them'
 
           return (
